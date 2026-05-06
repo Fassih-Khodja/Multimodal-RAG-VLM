@@ -1,0 +1,25 @@
+Project 2: Vision-Language Model (VLM)
+
+The Project: Multimodal RAG (Retrieval-Augmented Generation) for Complex Technical Manuals
+
+The Problem: Normal chatbots and standard RAG systems can only read text. If you give them a 500-page engineering manual or a medical textbook, they completely ignore the diagrams, charts, and blueprints.
+
+How it Works: You will build a "Visual RAG" system.
+
+You upload a dense, complex PDF (like a car repair manual or a dataset of circuit board diagrams).
+
+Your code parses the PDF, separating the text from the images, and stores both in a Multimodal Vector Database.
+
+A user asks a question like, "Based on the wiring diagram on page 42, what happens if I cut the red wire?"
+
+Your system searches the database, retrieves the exact diagram and the surrounding text, feeds both into an open-source VLM, and the VLM generates a perfectly accurate answer based on the visual context.
+
+The Tech Stack to Learn:
+
+Framework: LangChain or LlamaIndex (crucial for building modern AI agent pipelines).
+
+Database: Qdrant or Milvus (vector databases that support image embeddings).
+
+The VLM: Use a lightweight, open-source VLM from Hugging Face (like LLaVA-1.5 or Qwen-VL).
+
+Embeddings: OpenAI's CLIP model (to turn images into searchable vectors
