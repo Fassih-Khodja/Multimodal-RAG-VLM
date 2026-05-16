@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.ipynb_checkpoints/
+
+# Project outputs
+extracted/chunks.json
+extracted/image_embeddings.json
+extracted/manifest.json
+extracted/images.json
+extracted/tables.json
+extracted/texts.json
+extracted/images/
+extracted/tables/
+
+# Local scratch files
+test.pdf
+Gemini_Generated_Image_*.png
