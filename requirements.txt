@@ -3,3 +3,4 @@ sentence-transformers
 transformers
 torch
 Pillow
+qdrant-client

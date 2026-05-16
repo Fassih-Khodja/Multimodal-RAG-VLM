@@ -182,6 +182,20 @@ def embed_images(
     device: str,
     base_dir: Path,
 ) -> List[Dict[str, Any]]:
+    def _to_vector(features: Any) -> List[float]:
+        import torch
+
+        if isinstance(features, torch.Tensor):
+            tensor = features
+        elif hasattr(features, "image_embeds"):
+            tensor = features.image_embeds
+        elif hasattr(features, "pooler_output"):
+            tensor = features.pooler_output
+        else:
+            raise TypeError("Unsupported image features output type")
+
+        return tensor.detach().cpu().numpy().reshape(-1).tolist()
+
     try:
         import torch
         from PIL import Image
@@ -203,7 +217,13 @@ def embed_images(
     for record in images:
         image_path = Path(str(record.get("image_path", "")))
         if not image_path.is_absolute():
-            image_path = base_dir / image_path
+            candidate = base_dir / image_path
+            if candidate.exists():
+                image_path = candidate
+            else:
+                candidate = base_dir.parent / image_path
+                if candidate.exists():
+                    image_path = candidate
         if not image_path.exists():
             continue
 
@@ -212,7 +232,7 @@ def embed_images(
         inputs = {k: v.to(device) for k, v in inputs.items()}
         with torch.no_grad():
             features = model.get_image_features(**inputs)
-        embedding = features[0].cpu().numpy().tolist()
+        embedding = _to_vector(features)
 
         output = dict(record)
         output["image_path"] = str(image_path)
