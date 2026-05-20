@@ -1,22 +1,49 @@
 import argparse
+import os
 import base64
+from io import BytesIO
 from pathlib import Path
+from PIL import Image
 
-# User mentioned they already installed ollama
-import ollama
+# Import OpenAI (used for OpenRouter)
+from openai import OpenAI
 
 # Import our previously created search function
 from search_qdrant import search_vlm
 
-def get_base64_image(image_path: str) -> str:
-    """Read an image file and return its base64 encoded string."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
+# ==========================================
+# CONFIGURATION: OPENROUTER API
+# ==========================================
+# Place your API key here or set it as an environment variable
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "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")
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_API_KEY,
+)
 
-def ask_moondream(prompt: str):
+# You can change this to another model supported by OpenRouter (e.g. openai/gpt-4o)
+MODEL_NAME = "openai/gpt-4o"
+# ==========================================
+
+def get_base64_image(image_path: str, max_size=(800, 800)) -> str:
+    """Read an image file, resize it, and return the base64 encoded string."""
+    img = Image.open(image_path)
+    # Convert to RGB if it's not (e.g. RGBA or P)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+    
+    # Resize if larger than max_size while maintaining aspect ratio
+    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+    
+    # Convert PIL Image to base64
+    buffered = BytesIO()
+    img.save(buffered, format="JPEG")
+    return base64.b64encode(buffered.getvalue()).decode('utf-8')
+
+def ask_openrouter(prompt: str):
     """docker run -p 6333:6333 -v ./qdrant_storage:/qdrant/storage qdrant/qdrant
     Takes a user prompt, retrieves relevant text chunks and images using Qdrant,
-    constructs a context-rich prompt, and asks the Ollama moondream model.
+    constructs a context-rich prompt, and asks the model via OpenRouter.
     """
     print("\n--- 1. Retrieving context from Qdrant database ---")
     results = search_vlm(prompt=prompt)
@@ -62,7 +89,7 @@ def ask_moondream(prompt: str):
             if Path(expected_path).exists():
                 image_paths.add(expected_path)
     
-    # Convert images to base64 for ollama
+    # Load images as base64 for OpenAI API
     base64_images = []
     for ipath in image_paths:
         try:
@@ -75,39 +102,46 @@ def ask_moondream(prompt: str):
     # ---------------------------------------------------------
     system_prompt = "You are a technical manual assistant. Answer only based on the provided context."
     
-    full_prompt = f"""System: {system_prompt}
-
-Context Text:
+    # Text part of the message
+    user_text = f"""Context Text:
 {context_text}
 
-Images: [Attached {len(base64_images)} image(s) to the message payload]
+Images: [Attached {len(base64_images)} image(s)]
 
 User Question: {prompt}"""
-    
-    # ---------------------------------------------------------
-    # 5. Call Ollama (Moondream)
-    # ---------------------------------------------------------
-    print(f"\n--- 2. Sending {len(base64_images)} image(s) and context to Moondream ---")
-    
-    response = ollama.chat(
-        model='llava-phi3',
-        messages=[
-            {
-                'role': 'user',
-                'content': full_prompt,
-                'images': base64_images  # Ollama natively takes the base64 lists here
+
+    # Build the message content (text + images)
+    content = [{"type": "text", "text": user_text}]
+    for b64_img in base64_images:
+        content.append({
+            "type": "image_url",
+            "image_url": {
+                "url": f"data:image/jpeg;base64,{b64_img}"
             }
-        ]
+        })
+
+    # ---------------------------------------------------------
+    # 5. Call OpenRouter
+    # ---------------------------------------------------------
+    print(f"\n--- 2. Sending {len(base64_images)} image(s) and context to OpenRouter ---")
+    
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": content}
+        ],
+        max_tokens=1000  # Specify limit to prevent 402 insufficient token credit errors
     )
     
-    return response['message']['content']
+    return response.choices[0].message.content
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ask Moondream using VLM RAG")
+    parser = argparse.ArgumentParser(description="Ask OpenRouter using VLM RAG")
     parser.add_argument("--prompt", type=str, required=True, help="Your question")
     args = parser.parse_args()
     
-    answer = ask_moondream(prompt=args.prompt)
+    answer = ask_openrouter(prompt=args.prompt)
     print("\n==================== ANSWER ====================")
     print(answer)
     print("================================================\n")
