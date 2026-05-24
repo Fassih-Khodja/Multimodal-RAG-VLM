@@ -2,20 +2,20 @@
 
 Welcome to the Multimodal RAG project! This project demonstrates how to build a **Visual RAG (Retrieval-Augmented Generation)** system. Normal RAG systems only process text, completely ignoring crucial visual data like diagrams, charts, and blueprints. This project bridges that gap by extracting both text and images from complex PDFs, embedding them into a unified multimodal vector database, and utilizing an advanced Vision-Language Model to answer your questions accurately based on both text and visual context.
 
-## 📖 Project Structure & Explanation
+##  Project Structure & Explanation
 
 For a deep dive into how the architecture is designed and the logic behind each phase of the project, please read the **[Project Explanation](Project_Explanation.md)**. It contains a detailed breakdown and architectural diagrams to help you fully grasp the pipeline.
 
-**🧠 Are you a beginner?**
+**Are you a beginner?**
 If you are new to concepts like RAG, CLIP, Vector Databases, or VLMs, we highly recommend checking out our interactive notebook: **[Learning.ipynb](Learning.ipynb)**. It breaks down these complex concepts into simple, easy-to-understand explanations with practical examples!
 
-## 🚀 Why OpenRouter?
+##  Why OpenRouter?
 
 Initially, we tested running this pipeline entirely locally using lightweight models like **Moondream** (which is great for CPU environments). However, we found its text generation capabilities to be lacking for complex technical queries. On the other hand, larger models like **LLaVA** or **Qwen-VL** are quite heavy and require significant GPU resources. 
 
 To strike the perfect balance between high-quality responses and performance, we migrated to the **OpenRouter API**, allowing us to utilize powerful, state-of-the-art vision models without the hardware overhead.
 
-## ⚙️ How to Run the Project
+##  How to Run the Project
 
 ### 1. Setup the Environment
 
