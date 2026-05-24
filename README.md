@@ -74,10 +74,24 @@ python qdrant_ingest.py \
   --image-embeddings-json extracted/image_embeddings.json
 ```
 
-### 7. Ask the VLM
+### 7. Ask the VLM (CLI Method)
 
 Finally, query your system! The script will retrieve relevant text and images from Qdrant, construct a multimodal prompt, and ask the VLM via OpenRouter:
 
 ```bash
 python ask_vlm.py --prompt "Based on the wiring diagram, what happens if I cut the red wire?"
 ```
+
+---
+
+###  8. Alternative: Use the Web Interface (All-in-One)
+
+If you prefer a visual interface, you can run the FastAPI web application! The web UI allows you to upload a PDF and ask a question in one go. It will automatically handle the parsing, chunking, Qdrant ingestion, and querying for you!
+
+**Prerequisite:** Make sure your Qdrant Docker container is running (Step 3).
+
+```bash
+python app.py
+```
+
+Then, open your browser and navigate to `http://localhost:8000`. You can upload your PDF and chat with your manual directly from the beautiful UI!
