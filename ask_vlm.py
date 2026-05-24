@@ -15,7 +15,10 @@ from search_qdrant import search_vlm
 # CONFIGURATION: OPENROUTER API
 # ==========================================
 # Place your API key here or set it as an environment variable
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "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")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+if not OPENROUTER_API_KEY:
+    raise ValueError("OPENROUTER_API_KEY environment variable not set. Please set it to your OpenRouter API key.")
+
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=OPENROUTER_API_KEY,

@@ -14,10 +14,35 @@ def _write_json(path: Path, data: Any) -> None:
 
 
 def _save_pixmap_as_png(pix: fitz.Pixmap, output_path: Path) -> None:
-    if pix.n > 4:
-        pix = fitz.Pixmap(fitz.csRGB, pix)
+    if pix.width <= 0 or pix.height <= 0:
+        return
+        
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    pix.save(str(output_path))
+    
+    try:
+        # Force conversion to RGB if not Gray/RGB or if it has weird properties
+        if (pix.colorspace and pix.colorspace.name not in (fitz.csRGB.name, fitz.csGRAY.name)) or pix.n > 4:
+            pix = fitz.Pixmap(fitz.csRGB, pix)
+            
+        pix.save(str(output_path))
+    except Exception as e:
+        try:
+            # Fallback using PIL
+            from PIL import Image
+            mode = "RGBA" if pix.alpha else "RGB"
+            if pix.n == 1:
+                mode = "L"
+            elif pix.n == 2:
+                mode = "LA"
+            elif pix.n == 4 and not pix.alpha:
+                mode = "CMYK"
+                
+            img = Image.frombytes(mode, [pix.width, pix.height], pix.samples)
+            if mode == "CMYK":
+                img = img.convert("RGB")
+            img.save(str(output_path))
+        except Exception as inner_e:
+            print(f"Warning: Could not save image {output_path} - PyMuPDF error: {e}, PIL error: {inner_e}")
 
 
 def extract_pdf_assets(pdf_path: str, output_dir: str = "extracted") -> Dict[str, Path]:

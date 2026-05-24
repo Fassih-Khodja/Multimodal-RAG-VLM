@@ -19,3 +19,6 @@ extracted/tables/
 # Local scratch files
 test.pdf
 Gemini_Generated_Image_*.png
+
+# Environment variables
+.env
