@@ -25,3 +25,4 @@ Gemini_Generated_Image_*.png
 
 # Database storage
 qdrant_storage/
+agent_memory_db/

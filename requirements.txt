@@ -4,3 +4,7 @@ transformers
 torch
 Pillow
 qdrant-client
+openai
+chromadb
+python-dotenv
+requests
