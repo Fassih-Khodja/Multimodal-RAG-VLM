@@ -1,97 +1,85 @@
-# Multimodal RAG using Vision-Language Models (VLM)
+# Advanced Multimodal & Agentic RAG System
 
-Welcome to the Multimodal RAG project! This project demonstrates how to build a **Visual RAG (Retrieval-Augmented Generation)** system. Normal RAG systems only process text, completely ignoring crucial visual data like diagrams, charts, and blueprints. This project bridges that gap by extracting both text and images from complex PDFs, embedding them into a unified multimodal vector database, and utilizing an advanced Vision-Language Model to answer your questions accurately based on both text and visual context.
+Welcome to the **Advanced Multimodal & Agentic RAG System** project! This repository contains a comprehensive suite of AI tools demonstrating state-of-the-art Retrieval-Augmented Generation (RAG) capabilities using Vision-Language Models (VLMs) and Agentic AI frameworks.
 
-##  Project Structure & Explanation
+This project was built to explore how we can bridge the gap between text-only language models and visually rich documents (like manuals, diagrams, and blueprints), and how we can empower these models with reasoning and tool-use via Agentic AI.
 
-For a deep dive into how the architecture is designed and the logic behind each phase of the project, please read the **[Project Explanation](Project_Explanation.md)**. It contains a detailed breakdown and architectural diagrams to help you fully grasp the pipeline.
+## 🚀 Two Main Components
 
-**Are you a beginner?**
-If you are new to concepts like RAG, CLIP, Vector Databases, or VLMs, we highly recommend checking out our interactive notebook: **[Learning.ipynb](Learning.ipynb)**. It breaks down these complex concepts into simple, easy-to-understand explanations with practical examples!
+This repository is divided into two major projects that build upon each other:
 
-##  Why OpenRouter?
+### 1. Multimodal RAG System (`src/standard_rag`)
+A complete pipeline to extract, embed, and query both text and images from complex PDFs. 
+*   **Data Extraction**: Parses text, images, and tables from PDFs.
+*   **Multimodal Embedding**: Uses CLIP and text embedding models to map visuals and text into a shared vector space.
+*   **Vector Database**: Utilizes **Qdrant** to store and retrieve these embeddings efficiently.
+*   **VLM Integration**: Uses **OpenRouter** to query advanced Vision-Language Models (like LLaVA or Qwen-VL) passing both the user's prompt and retrieved visual context.
+*   **Interactive UI**: Includes a FastAPI web interface to upload PDFs, process them, and chat with your documents visually.
 
-Initially, we tested running this pipeline entirely locally using lightweight models like **Moondream** (which is great for CPU environments). However, we found its text generation capabilities to be lacking for complex technical queries. On the other hand, larger models like **LLaVA** or **Qwen-VL** are quite heavy and require significant GPU resources. 
+### 2. Agentic AI RAG (`src/agentic_rag`)
+Enhances the RAG pipeline with Agentic behavior, allowing the AI to reason, use tools, and make decisions to answer complex queries.
+*   **ReAct Architecture**: Implements the Reason-Act framework, giving the LLM the ability to break down problems into steps and execute tools.
+*   **LangGraph**: Uses LangGraph to orchestrate complex, multi-agent workflows and stateful cyclic processes for deeper document analysis.
+*   **Tool Use**: Agents can independently decide when to search the vector database, process an image, or calculate a metric based on the user's query.
 
-To strike the perfect balance between high-quality responses and performance, we migrated to the **OpenRouter API**, allowing us to utilize powerful, state-of-the-art vision models without the hardware overhead.
+---
 
-##  How to Run the Project
+## 📂 Project Structure
 
-### 1. Setup the Environment
+```
+.
+├── src/
+│   ├── standard_rag/       # Core multimodal RAG extraction, ingestion, and UI scripts
+│   └── agentic_rag/        # Advanced LangGraph and ReAct agent implementations
+├── tutorials/              # Jupyter notebooks explaining core concepts step-by-step
+├── Project_Explanation.md  # Deep-dive architecture and design decisions
+└── requirements.txt        # Python dependencies
+```
 
-Create a virtual environment and install the required dependencies:
+## 🛠️ Technologies & Skills Demonstrated
+- **AI / LLMs**: Vision-Language Models (VLMs), OpenRouter API, CLIP Embeddings.
+- **Frameworks**: LangGraph, LangChain, FastAPI.
+- **Agentic AI**: ReAct Pattern, Stateful Agents, Tool calling.
+- **Vector Search**: Qdrant, Multimodal Retrieval.
+- **Programming**: Python, Object-Oriented Design, API Integration.
 
+## ⚙️ How to Run Locally
+
+### 1. Setup Environment
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ### 2. Configure API Keys
-
-We use OpenRouter to access the VLM. You must set your API key as an environment variable (Do not hardcode it in the source files!):
-
+Export your OpenRouter API key to use the VLM:
 ```bash
 export OPENROUTER_API_KEY="your-api-key-here"
 ```
 
-### 3. Start Qdrant (Vector Database)
-
-We use Qdrant to store our embeddings. Start it locally using Docker:
-
+### 3. Run Qdrant Database (Docker)
 ```bash
 docker run -p 6333:6333 -v ./qdrant_storage:/qdrant/storage qdrant/qdrant
 ```
 
-### 4. Extract PDF Assets
-
-Extract text, images, and tables from your technical PDF:
-
+### 4. Interactive Web UI (Standard RAG)
+You can run the web interface to upload a document and test the multimodal RAG:
 ```bash
-python pdf_extract.py /path/to/your.pdf --output-dir extracted
-```
-
-This will generate parsed JSONs and image files inside the `extracted/` folder.
-
-### 5. Build Chunks and Embeddings
-
-Process the extracted data and generate multimodal embeddings (using CLIP and text embedders):
-
-```bash
-python chunk_and_embed.py \
-  --texts-json extracted/texts.json \
-  --images-json extracted/images.json \
-  --output-dir extracted
-```
-
-### 6. Ingest into Qdrant
-
-Load the generated chunks and embeddings into your running Qdrant database:
-
-```bash
-python qdrant_ingest.py \
-  --chunks-json extracted/chunks.json \
-  --image-embeddings-json extracted/image_embeddings.json
-```
-
-### 7. Ask the VLM (CLI Method)
-
-Finally, query your system! The script will retrieve relevant text and images from Qdrant, construct a multimodal prompt, and ask the VLM via OpenRouter:
-
-```bash
-python ask_vlm.py --prompt "Based on the wiring diagram, what happens if I cut the red wire?"
-```
-
----
-
-###  8. Alternative: Use the Web Interface (All-in-One)
-
-If you prefer a visual interface, you can run the FastAPI web application! The web UI allows you to upload a PDF and ask a question in one go. It will automatically handle the parsing, chunking, Qdrant ingestion, and querying for you!
-
-**Prerequisite:** Make sure your Qdrant Docker container is running (Step 3).
-
-```bash
+cd src/standard_rag
 python app.py
 ```
+Then visit `http://localhost:8000` in your browser.
 
-Then, open your browser and navigate to `http://localhost:8000`. You can upload your PDF and chat with your manual directly from the beautiful UI!
+### 5. Running Agentic AI Scripts
+Navigate to the agentic directory to test the LangGraph and ReAct agents:
+```bash
+cd src/agentic_rag
+python langgraph_agent.py
+```
+
+## 📚 Learning Resources
+If you are new to the concepts used in this project, check out the `tutorials/` directory. It contains interactive notebooks (`vlm_rag_basics.ipynb` and `agentic_ai_basics.ipynb`) designed to gently introduce the theory and code behind Multimodal RAGs and AI Agents.
+
+---
+*Created as an End-of-Studies (PFE) demonstration project to showcase advanced modern AI integration.*

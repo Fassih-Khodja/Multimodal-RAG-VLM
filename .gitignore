@@ -1,28 +1,48 @@
+# Environments
 .venv/
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-.Python
-.ipynb_checkpoints/
-
-# Project outputs
-extracted/chunks.json
-extracted/image_embeddings.json
-extracted/manifest.json
-extracted/images.json
-extracted/tables.json
-extracted/texts.json
-extracted/images/
-extracted/tables/
-
-# Local scratch files
-test.pdf
-Gemini_Generated_Image_*.png
-
-# Environment variables
+env/
+venv/
+ENV/
 .env
 
-# Database storage
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Project Specific
+extracted/
 qdrant_storage/
 agent_memory_db/
+Gemini_Generated_Image_*.png
+test.pdf
+*.pdf
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
