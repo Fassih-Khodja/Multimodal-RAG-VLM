@@ -4,7 +4,7 @@ Welcome to the **Advanced Multimodal & Agentic RAG System** project! This reposi
 
 This project was built to explore how we can bridge the gap between text-only language models and visually rich documents (like manuals, diagrams, and blueprints), and how we can empower these models with reasoning and tool-use via Agentic AI.
 
-## 🚀 Two Main Components
+##  Two Main Components
 
 This repository is divided into two major projects that build upon each other:
 
@@ -24,7 +24,7 @@ Enhances the RAG pipeline with Agentic behavior, allowing the AI to reason, use 
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 .
@@ -36,7 +36,7 @@ Enhances the RAG pipeline with Agentic behavior, allowing the AI to reason, use 
 └── requirements.txt        # Python dependencies
 ```
 
-## 🛠️ Technologies & Skills Demonstrated
+##  Technologies & Skills Demonstrated
 - **AI / LLMs**: Vision-Language Models (VLMs), OpenRouter API, CLIP Embeddings.
 - **Frameworks**: LangGraph, LangChain, FastAPI.
 - **Agentic AI**: ReAct Pattern, Stateful Agents, Tool calling.
@@ -78,8 +78,7 @@ cd src/agentic_rag
 python langgraph_agent.py
 ```
 
-## 📚 Learning Resources
+##  Learning Resources
 If you are new to the concepts used in this project, check out the `tutorials/` directory. It contains interactive notebooks (`vlm_rag_basics.ipynb` and `agentic_ai_basics.ipynb`) designed to gently introduce the theory and code behind Multimodal RAGs and AI Agents.
 
----
-*Created as an End-of-Studies (PFE) demonstration project to showcase advanced modern AI integration.*
+
